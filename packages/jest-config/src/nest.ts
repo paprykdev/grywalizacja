@@ -25,6 +25,8 @@ export const nestConfig = {
     '^.+\\.(t|j)s$': ['@swc/jest', swcOptions],
   },
   transformIgnorePatterns: [],
+  // Prisma's generated client imports sibling .ts files with .js extensions
+  moduleNameMapper: { '^(\\.{1,2}/.*)\\.js$': '$1' },
   collectCoverageFrom: ['**/*.(t|j)s'],
   coverageDirectory: '../coverage',
   testEnvironment: 'node',

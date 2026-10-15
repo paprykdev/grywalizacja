@@ -60,3 +60,7 @@ pnpm-debug.log*
 # Misc
 .DS_Store
 *.pem
+
+# Prisma
+apps/api/src/generated/
+*.tsbuildinfo

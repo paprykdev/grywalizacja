@@ -1,128 +1,77 @@
-# Turborepo starter
+# Grywalizacja
 
-This is a community-maintained example. If you experience a problem, please submit a pull request with a fix. GitHub Issues will be closed.
+A Turborepo monorepo:
 
-## Using this example
+- **API:** NestJS + Prisma + PostgreSQL (Docker), with Swagger docs
+- **Web:** Vite + React + React Router + TanStack Query + shadcn/ui
 
-Run the following command:
+## Getting started
 
 ```bash
-npx create-turbo@latest -e with-nestjs
+npm install
+
+# 1. Configure env (used by Docker, Prisma and Nest) and set your own password
+cp apps/api/.env.example apps/api/.env
+
+# 2. Start Postgres
+npm run db:up
+
+# 3. Apply migrations and seed demo data
+npm run db:migrate -w api
+npm run db:seed -w api
+
+# 4. Run the API (http://localhost:3000, Swagger at /docs) and web (http://localhost:3001)
+npm run dev
 ```
 
+The web app calls the API through the Vite dev proxy: `/api/*` → `http://localhost:3000/*`. Set `API_URL` to point it elsewhere.
+
+For frontend conventions (folder structure, adding pages, components, queries and forms), see [`apps/web/README.md`](apps/web/README.md).
+
+> [!NOTE]
+> Postgres applies `POSTGRES_USER`/`POSTGRES_PASSWORD` only when the data volume is first created. To change them later, either run `ALTER USER ... PASSWORD '...'` in the database, or reset it with `docker compose --env-file apps/api/.env down -v`, which deletes all data. Keep `DATABASE_URL` in sync with the `POSTGRES_*` values.
+
+### Database scripts
+
+| Command                             | Description                                                                                         |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `npm run db:up` / `npm run db:down` | Start / stop the Postgres container                                                                 |
+| `npm run db:generate -w api`        | Generate the Prisma client into `apps/api/src/generated`. Runs automatically before build/dev/test. |
+| `npm run db:migrate -w api`         | Create and apply a migration after editing `prisma/schema.prisma`                                   |
+| `npm run db:deploy -w api`          | Apply pending migrations (CI/production)                                                            |
+| `npm run db:seed -w api`            | Run `prisma/seed.ts`                                                                                |
+| `npm run db:studio -w api`          | Open Prisma Studio                                                                                  |
+
 ## What's inside?
-
-This Turborepo includes the following packages and apps:
-
-### Apps and Packages
 
 ```shell
 .
 ├── apps
-│   ├── api                       # NestJS app (https://nestjs.com).
-│   └── web                       # Next.js app (https://nextjs.org).
+│   ├── api                       # NestJS + Prisma (https://nestjs.com)
+│   └── web                       # Vite + React + shadcn/ui (https://vite.dev)
 └── packages
-    ├── @repo/api                 # Shared NestJS resources.
+    ├── @repo/api                 # Shared DTOs/entities (API <-> web)
     ├── @repo/eslint-config       # ESLint configurations (includes Prettier)
-    ├── @repo/jest-config         # Jest configurations
-    ├── @repo/typescript-config   # tsconfig.json files used throughout the monorepo
-    └── @repo/ui                  # Shareable React component library.
+    ├── @repo/jest-config         # Jest configurations (API)
+    └── @repo/typescript-config   # tsconfig.json files used by the API and packages
 ```
-
-Each package and application is mostly written in [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already set up for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type safety
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-- [Jest](https://jestjs.io/) for testing
 
 ### Commands
 
-This Turborepo includes useful commands for its apps and packages.
-
-#### Build
-
 ```bash
-# Build all apps and packages that have a `build` script.
-npm build
+npm run build         # build all apps and packages
+npm run dev           # dev servers (API + web)
+npm run test          # unit tests (API: Jest, web: Vitest)
+npm run test:e2e      # API e2e tests (requires the database: npm run db:up)
+npm run lint
+npm run check-types
+npm run format        # Prettier
 ```
 
-#### Develop
+A Husky pre-commit hook runs Prettier on staged files through lint-staged.
 
-```bash
-# Run development servers for all apps and packages that have a `dev` script.
-npm dev
-```
+## Useful links
 
-#### Test
-
-```bash
-# Run unit tests for all apps and packages that have a `test` script.
-npm test
-
-# Run end-to-end tests for all apps and packages that have a `test:e2e` script.
-npm test:e2e
-```
-
-See `@repo/jest-config` to customize test behavior.
-
-#### Lint
-
-```bash
-# Lint all apps and packages that have a `lint` script.
-npm lint
-```
-
-See `@repo/eslint-config` to customize lint behavior.
-
-#### Check types
-
-```bash
-# Type-check all apps and packages that have a `check-types` script.
-npm check-types
-```
-
-#### Format
-
-```bash
-# Format supported TypeScript, TSX, and Markdown files.
-npm format
-```
-
-See `@repo/eslint-config/prettier-base` to customize formatting.
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines and CI.
-
-By default, Turborepo caches locally. To enable Remote Caching, create a [Vercel account](https://vercel.com/signup?utm_source=turborepo-examples), then authenticate:
-
-```bash
-npm turbo login
-```
-
-Next, link the repository to Remote Cache from the repository root:
-
-```bash
-npm turbo link
-```
-
-## Useful Links
-
-This example takes inspiration from the [with-nextjs](https://github.com/vercel/turborepo/tree/main/examples/with-nextjs) Turborepo example and the [01-cats-app](https://github.com/nestjs/nest/tree/master/sample/01-cats-app) NestJS sample.
-
-Learn more about Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+- [Turborepo docs](https://turborepo.dev/docs)
+- [NestJS](https://docs.nestjs.com), [Prisma](https://www.prisma.io/docs)
+- [React Router](https://reactrouter.com), [TanStack Query](https://tanstack.com/query/latest), [shadcn/ui](https://ui.shadcn.com)

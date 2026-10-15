@@ -6,7 +6,6 @@
   "exports": {
     "./base": "./base.js",
     "./library": "./library.js",
-    "./next-js": "./next.js",
     "./nest-js": "./nest.js",
     "./prettier-base": "./prettier-base.js",
     "./react-internal": "./react-internal.js"
@@ -15,7 +14,6 @@
     "@babel/core": "8.0.5",
     "@babel/eslint-parser": "8.0.5",
     "@eslint/js": "10.0.1",
-    "@next/eslint-plugin-next": "16.3.5",
     "eslint": "10.10.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-only-warn": "1.2.1",

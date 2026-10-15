@@ -6,38 +6,57 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
+import {
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
-import type { CreateLinkDto, UpdateLinkDto } from '@repo/api';
+import { CreateLinkDto, Link, UpdateLinkDto } from '@repo/api';
 
 import { LinksService } from './links.service';
 
+@ApiTags('links')
 @Controller('links')
 export class LinksController {
   constructor(private readonly linksService: LinksService) {}
 
   @Post()
+  @ApiCreatedResponse({ type: Link })
   create(@Body() createLinkDto: CreateLinkDto) {
     return this.linksService.create(createLinkDto);
   }
 
   @Get()
+  @ApiOkResponse({ type: [Link] })
   findAll() {
     return this.linksService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.linksService.findOne(+id);
+  @ApiOkResponse({ type: Link })
+  @ApiNotFoundResponse()
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.linksService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLinkDto: UpdateLinkDto) {
-    return this.linksService.update(+id, updateLinkDto);
+  @ApiOkResponse({ type: Link })
+  @ApiNotFoundResponse()
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateLinkDto: UpdateLinkDto,
+  ) {
+    return this.linksService.update(id, updateLinkDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.linksService.remove(+id);
+  @ApiOkResponse({ type: Link })
+  @ApiNotFoundResponse()
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.linksService.remove(id);
   }
 }

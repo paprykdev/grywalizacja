@@ -12,11 +12,16 @@
     "test:e2e": "turbo run test:e2e",
     "lint": "turbo run lint",
     "check-types": "turbo run check-types",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,css,md}\"",
+    "db:up": "docker compose --env-file apps/api/.env up -d --wait",
+    "db:down": "docker compose --env-file apps/api/.env down",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
+    "husky": "9.1.7",
+    "lint-staged": "17.6.0",
     "pnpm": "12.4.1",
     "prettier": "3.9.6",
     "turbo": "^2.11.8"
@@ -33,5 +38,8 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "lint-staged": {
+    "*.{ts,tsx,js,mjs,json,css,md}": "prettier --write --ignore-unknown"
+  }
 }

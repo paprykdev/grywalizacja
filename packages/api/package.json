@@ -27,7 +27,8 @@
     }
   },
   "dependencies": {
-    "@nestjs/mapped-types": "12.0.0"
+    "@nestjs/swagger": "12.0.2",
+    "class-validator": "0.15.1"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
