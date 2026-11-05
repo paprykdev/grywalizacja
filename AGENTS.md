@@ -2,6 +2,33 @@
 
 Turborepo monorepo (npm workspaces, Node >= 24): NestJS API + Prisma/PostgreSQL (Docker) and a Vite + React frontend.
 
+## Project context
+
+- **What it is:** "Grywalizacja" (Polish for _gamification_). The repo is currently a **boilerplate**; no product features exist yet. The `links` resource, on both API and web, is a demo that serves as the reference pattern. Delete or replace it once real features exist, and don't build on its data model.
+- **Who works here:** the owner and a team that includes **new programmers**. Optimize for readability and consistency over cleverness:
+  - follow the existing patterns and the official docs of each library one-to-one
+  - keep one obvious place for each kind of code
+  - avoid new abstractions, libraries or config tricks unless asked; when you do add one, document it
+  - comments explain _why_, briefly
+  - `apps/web/README.md` is the team's how-to guide; keep it accurate when patterns change
+- **Language:** code, comments and docs are in English.
+
+## Working in this repo (for agents)
+
+- **Before finishing:** run `npm run build && npm run check-types && npm run lint && npm run test` from the root, plus `npm run test:e2e` if the API changed (that needs `npm run db:up`). Lint runs with `--max-warnings 0`, so warnings fail it.
+- **Keep docs in sync:** `CLAUDE.md` and `AGENTS.md` are identical copies, so update both. Also update `apps/web/README.md` (frontend patterns), the root `README.md` (setup/commands) and `apps/api/.env.example` (new env vars) whenever they're affected.
+- **Ask before:**
+  - adding a dependency
+  - changing the stack or the folder structure
+  - running destructive DB commands (`prisma migrate reset`, `docker compose down -v`)
+  - committing; the owner commits manually
+- **Adding a resource end-to-end:** the checklist, with `links` as the template:
+  1. `apps/api/prisma/schema.prisma`: add the model, then `npm run db:migrate -w api -- --name <change>`.
+  2. `packages/api/src/<name>/`: entity + DTOs with `class-validator` and `@ApiProperty()`, exported from `src/entry.ts`.
+  3. `apps/api/src/<name>/`: module, controller and service (inject `PrismaService`), registered in `app.module.ts`, plus a spec that mocks `PrismaService`.
+  4. `apps/web/src/features/<name>/`: `api.ts` (query keys and hooks), `schemas.ts` (zod mirroring the DTO), `components/`, `pages/`.
+  5. Register the pages in `src/app/router.tsx`, and in `navItems` if they belong in the navigation. Add a component test.
+
 ## Layout
 
 - `apps/api`: NestJS 12, compiled by **SWC** to CommonJS (`swc src -d dist`), not `nest build`
