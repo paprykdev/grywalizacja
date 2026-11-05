@@ -1,0 +1,24 @@
+# CODEOWNERS: osoby automatycznie proszone o review.
+# Zamień placeholdery na prawdziwe loginy GitHub.
+# Reguły niżej wygrywają z wyższymi (liczy się ostatnie pasujące dopasowanie).
+
+# Domyślnie: lead developer widzi wszystko
+*                       @paprykdev
+
+# Backend
+/backend/               @paprykdev @mocnyziomek
+
+# Frontend
+/frontend/              @jakbas3 @Dawxdio
+
+# Migracje i schemat bazy: zawsze review leada
+/backend/**/migrations/ @paprykdev @mocnyziomek
+
+# CI, konfiguracja repo, Docker: lead
+/.github/               @paprykdev
+/docker-compose*.yml    @paprykdev @mocnyziomek
+Dockerfile*             @paprykdev @mocnyziomek
+
+# Dokumentacja: każdy z zespołu, więc bez wymuszonego właściciela
+# /docs/
+
