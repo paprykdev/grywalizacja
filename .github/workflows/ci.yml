@@ -42,7 +42,22 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 24 # package.json wymaga node >=24.11.0
-          cache: npm
+          # Bez "cache: npm": ten krok uruchamia npm w katalogu repo, a npm
+          # sprawdza tam devEngines i wywala się, bo runner ma inną wersję npm.
+
+      # devEngines.packageManager wymaga dokładnie tej wersji npm.
+      # Uruchamiamy poza katalogiem repo, żeby npm nie sprawdzał devEngines
+      # przed zainstalowaniem właściwej wersji.
+      - name: Pin npm version (zgodnie z devEngines)
+        run: npm install -g npm@11.12.1
+        working-directory: ${{ runner.temp }}
+
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: ${{ runner.os }}-npm-
 
       - name: Install dependencies
         run: npm ci
