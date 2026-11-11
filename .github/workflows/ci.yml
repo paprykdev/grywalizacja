@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Nowy push do tego samego PR-a anuluje poprzedni, jeszcze trwający przebieg
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-e2e:
+    name: test:e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    # Kontener z PostgreSQL startuje obok joba i jest dostępny na localhost:5432
+    services:
+      postgres:
+        image: postgres:18-alpine # ta sama wersja co w docker-compose.yml
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres # baza jednorazowa, więc nie jest to sekret
+          POSTGRES_DB: grywalizacja_test
+        ports:
+          - 5432:5432
+        # GitHub czeka na "healthy" zanim uruchomi kroki joba
+        options: >-
+          --health-cmd "pg_isready -U postgres -d grywalizacja_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/grywalizacja_test
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24 # package.json wymaga node >=24.11.0
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Seed importuje wygenerowanego klienta Prisma, więc generate musi być przed nim
+      - name: Generate Prisma client
+        run: npm run db:generate -w api
+
+      - name: Apply migrations
+        run: npm run db:deploy -w api
+
+      - name: Seed database
+        run: npm run db:seed -w api
+
+      - name: Run e2e tests
+        run: npm run test:e2e
