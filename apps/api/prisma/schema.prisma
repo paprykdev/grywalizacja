@@ -16,3 +16,34 @@ model Link {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+enum Role {
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
+enum UserStatus {
+  PENDING_APPROVAL
+  PENDING_ACTIVATION
+  ACTIVE
+  REJECTED
+  BLOCKED
+}
+
+model User {
+  id                  Int        @id @default(autoincrement())
+  email               String     @unique
+  firstName           String
+  lastName            String
+  role                Role
+  status              UserStatus
+  passwordHash        String?
+  nick                String?
+  avatarUrl           String?
+  forcePasswordChange Boolean    @default(false)
+  failedLoginAttempts Int        @default(0)
+  lockedUntil         DateTime?
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+}
