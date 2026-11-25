@@ -24,6 +24,7 @@
     "@nestjs/common": "12.0.2",
     "@nestjs/config": "12.0.1",
     "@nestjs/core": "12.0.2",
+    "@nestjs/jwt": "12.0.5",
     "@nestjs/platform-express": "12.0.2",
     "@nestjs/swagger": "12.0.2",
     "@prisma/adapter-pg": "7.10.0",
@@ -32,6 +33,7 @@
     "argon2": "0.45.2",
     "class-transformer": "0.5.1",
     "class-validator": "0.15.1",
+    "cookie-parser": "1.4.7",
     "pg": "8.23.1",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.2"
@@ -47,6 +49,7 @@
     "@swc/cli": "0.8.1",
     "@swc/core": "1.16.2",
     "@swc/jest": "0.2.39",
+    "@types/cookie-parser": "1.4.10",
     "@types/express": "5.0.6",
     "@types/node": "26.5.1",
     "@types/pg": "8.23.1",
